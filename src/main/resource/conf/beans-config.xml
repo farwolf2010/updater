@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.1.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+           http://www.springframework.org/schema/task
+           http://www.springframework.org/schema/task/spring-task-3.0.xsd"
+        >
+    <bean id="dataSource"
+          class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName">
+            <value>com.mysql.jdbc.Driver</value>
+        </property>
+        <property name="url">
+            <value>${db.url}</value>
+        </property>
+        <property name="username">
+            <value>${db.user}</value>
+        </property>
+        <property name="password">
+            <value>${db.pass}</value>
+        </property>
+        <property name="testOnBorrow">
+            <value>true</value>
+        </property>
+        <property name="validationQuery">
+            <value>select 1 from dual</value>
+        </property>
+    </bean>
+
+    <bean id="transactionAwareDataSource"
+          class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+        <constructor-arg ref="dataSource" />
+    </bean>
+    <bean class="org.jooq.impl.DataSourceConnectionProvider" id="connectionProvider">
+        <constructor-arg ref="transactionAwareDataSource" />
+    </bean>
+
+
+    <bean name="sfmRecordMapperProvider" class="org.simpleflatmapper.jooq.SfmRecordMapperProvider"/>
+    <bean class="org.jooq.impl.DefaultConfiguration" id="config">
+        <property name="SQLDialect"><value type="org.jooq.SQLDialect">MYSQL</value></property>
+        <property name="connectionProvider" ref="connectionProvider" />
+        <property name="executeListenerProvider">
+            <null />
+        </property>
+        <property name="recordMapperProvider" ref="sfmRecordMapperProvider"/>
+    </bean>
+
+    <bean id="dsl" class="org.jooq.impl.DefaultDSLContext">
+        <constructor-arg ref="config" />
+    </bean>
+    <bean id="p1"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location">
+            <value>classpath:config.properties</value>
+        </property>
+        <property name="fileEncoding" value="utf-8" />
+    </bean>
+    <!--<task:executor id="executor" pool-size="5" />-->
+    <!--<task:scheduler id="scheduler" pool-size="10" />-->
+    <!--<task:annotation-driven executor="executor" scheduler="scheduler" />-->
+
+
+
+    <context:component-scan base-package="com.farwolf.updater.service"></context:component-scan>
+    <context:component-scan base-package="com.farwolf.updater.serializer"></context:component-scan>
+    <context:component-scan base-package="com.farwolf.updater.serializer"></context:component-scan>
+    <!--<context:component-scan base-package="com.movie.exception"></context:component-scan>-->
+    <!--<context:component-scan base-package="com.movie.source"></context:component-scan>-->
+
+    <!--<context:component-scan base-package="com.movie.reslover"></context:component-scan>-->
+
+
+
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+
+
+
+</beans>
