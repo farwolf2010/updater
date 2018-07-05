@@ -5,18 +5,16 @@ import com.farwolf.updater.auto.tables.records.VersionRecord;
 import com.farwolf.updater.service.HotupdateService;
 import com.farwolf.updater.service.VersionService;
 import com.farwolf.updater.util.VResult;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by zhengjiangrong on 18/4/30.
  */
-@RestController
-
+@Controller
 public class AppControl {
 
 
@@ -29,6 +27,7 @@ public class AppControl {
 
 
     @RequestMapping(value = "/version")
+    @ResponseBody
     public VResult versioncheck(String appid,String systype,String vcode,String source) {
 
 
@@ -53,6 +52,7 @@ public class AppControl {
 
 
     @RequestMapping(value = "/jsversion")
+    @ResponseBody
     public VResult jsversioncheck(int appid,int systype,int jsversion,int nativeversion) {
 
         VResult res=new VResult();
